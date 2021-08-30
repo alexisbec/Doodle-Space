@@ -41,3 +41,12 @@ class Player extends Entity {
     this.y = Phaser.Math.Clamp(this.y, 0, this.scene.game.config.height - 20);
   }
 }
+
+class EnemyOne extends Entity {
+  constructor(scene, x, y) {
+    super(scene, x, y, 'enemy_1', 'enemy_1');
+
+    this.body,velocity.x = Phaser.Math.Between(50, 100);
+    this.play('enemy_1');
+  }
+}
