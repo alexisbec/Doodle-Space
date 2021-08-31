@@ -14,6 +14,16 @@ class SceneMain extends Phaser.Scene {
       frameHeight: 30
     });
 
+    this.load.spritesheet('enemy_2', '../dist/assets/enemy_2.png', {
+      frameWidth: 40,
+      frameHeight: 30
+    });
+
+    this.load.spritesheet('enemy_3', '../dist/assets/enemy_3.png', {
+      frameWidth: 40,
+      frameHeight: 30
+    });
+
     this.load.image('bullet', '../dist/assets/bullet.png');
     this.load.image('bg1', '../dist/assets/bg1.jpg');
     this.load.image('bg2', '../dist/assets/bg2.png');
@@ -42,6 +52,60 @@ class SceneMain extends Phaser.Scene {
     this.keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
     this.keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
     this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+    this.anims.create({
+      key: "enemy_1",
+      frames: this.anims.generateFrameNumbers("enemy_1"),
+      frameRate: 20,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: "enemy_2",
+      frames: this.anims.generateFrameNumbers("enemy_2"),
+      frameRate: 20,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: "enemy_3",
+      frames: this.anims.generateFrameNumbers("enemy_3"),
+      frameRate: 20,
+      repeat: -1
+    });
+
+    this.enemies = this.add.group();
+    this.enemyLasers = this.add.group();
+    this.playerLasers = this.add.group();
+
+    this.time.addEvent({
+      delay: 1500,
+      callback: function() {
+        let enemy = null;
+
+        if (Phaser.Math.Between(0, 10) >= 3) {
+          enemy = new EnemyOne(
+            this,
+            800,
+            Phaser.Math.Between(0, this.game.config.height - 10)
+          );
+        } else if (Phaser.Math.Between(0, 10) >= 6) {
+          enemy = new EnemyTwo(
+            this,
+            800,
+            Phaser.Math.Between(0, this.game.config.height - 10)
+          );
+        } else {
+          enemy = new EnemyThree(
+            this,
+            800,
+            Phaser.Math.Between(0, this.game.config.height - 10)
+          );
+        }
+      },
+      callbackScope: this,
+      loop: true
+    });
   }
 
   update() {

@@ -46,7 +46,25 @@ class EnemyOne extends Entity {
   constructor(scene, x, y) {
     super(scene, x, y, 'enemy_1', 'enemy_1');
 
-    this.body,velocity.x = Phaser.Math.Between(50, 100);
+    this.body.velocity.x = -Phaser.Math.Between(100, 150);
     this.play('enemy_1');
+  }
+}
+
+class EnemyTwo extends Entity {
+  constructor(scene, x, y) {
+    super(scene, x, y, 'enemy_2', 'enemy_2');
+
+    this.body.velocity.x = -Phaser.Math.Between(100, 150);
+    this.play('enemy_2');
+  }
+}
+
+class EnemyThree extends Entity {
+  constructor(scene, x, y) {
+    super(scene, x, y, 'enemy_3', 'enemy_3');
+
+    this.body.velocity.x = -Phaser.Math.Between(100, 150);
+    this.play('enemy_3');
   }
 }
