@@ -1,6 +1,6 @@
 class Entity extends Phaser.GameObjects.Sprite {
   constructor(scene, x, y, key, type) {
-    super(scene, x, y, type);
+    super(scene, x, y, key);
 
     this.scene = scene;
     this.scene.add.existing(this);
@@ -16,6 +16,9 @@ class Player extends Entity {
 
     this.setData('speed', 200);
     this.play('ship');
+    this.setData("isShooting", false);
+    this.setData("timerShootDelay", 10);
+    this.setData("timerShootTick", this.getData("timerShootDelay") - 1);
   }
 
   moveUp() {
@@ -39,12 +42,30 @@ class Player extends Entity {
 
     this.x = Phaser.Math.Clamp(this.x, 0, this.scene.game.config.width - 35);
     this.y = Phaser.Math.Clamp(this.y, 0, this.scene.game.config.height - 20);
+
+    if (this.getData("isShooting")) {
+      if (this.getData("timerShootTick") < this.getData("timerShootDelay")) {
+        this.setData("timerShootTick", this.getData("timerShootTick") + 0.5);
+      } else {
+        var laser = new PlayerLaser(this.scene, this.x, this.y);
+        this.scene.playerLasers.add(laser);
+
+        this.setData("timerShootTick", 0);
+      }
+    }
+  }
+}
+
+class PlayerLaser extends Entity {
+  constructor(scene, x, y) {
+    super(scene, x, y, 'bullet');
+    this.body.velocity.x = 200
   }
 }
 
 class EnemyOne extends Entity {
   constructor(scene, x, y) {
-    super(scene, x, y, 'enemy_1', 'enemy_1');
+    super(scene, x, y, 'enemy_1');
 
     this.body.velocity.x = -Phaser.Math.Between(100, 150);
     this.play('enemy_1');
@@ -53,7 +74,7 @@ class EnemyOne extends Entity {
 
 class EnemyTwo extends Entity {
   constructor(scene, x, y) {
-    super(scene, x, y, 'enemy_2', 'enemy_2');
+    super(scene, x, y, 'enemy_2');
 
     this.body.velocity.x = -Phaser.Math.Between(100, 150);
     this.play('enemy_2');
@@ -62,7 +83,7 @@ class EnemyTwo extends Entity {
 
 class EnemyThree extends Entity {
   constructor(scene, x, y) {
-    super(scene, x, y, 'enemy_3', 'enemy_3');
+    super(scene, x, y, 'enemy_3');
 
     this.body.velocity.x = -Phaser.Math.Between(100, 150);
     this.play('enemy_3');

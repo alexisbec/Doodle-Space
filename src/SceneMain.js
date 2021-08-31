@@ -47,10 +47,10 @@ class SceneMain extends Phaser.Scene {
       'ship'
     );
 
-    this.keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
-    this.keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
-    this.keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
-    this.keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+    this.keyUp = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
+    this.keyDown = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
+    this.keyLeft = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
+    this.keyRight = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
     this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
     this.anims.create({
@@ -75,11 +75,10 @@ class SceneMain extends Phaser.Scene {
     });
 
     this.enemies = this.add.group();
-    this.enemyLasers = this.add.group();
     this.playerLasers = this.add.group();
 
     this.time.addEvent({
-      delay: 1500,
+      delay: 800,
       callback: function() {
         let enemy = null;
 
@@ -87,25 +86,27 @@ class SceneMain extends Phaser.Scene {
           enemy = new EnemyOne(
             this,
             800,
-            Phaser.Math.Between(0, this.game.config.height - 10)
+            Phaser.Math.Between(0, this.game.config.height - 30)
           );
-        } else if (Phaser.Math.Between(0, 10) >= 6) {
+        } else if (Phaser.Math.Between(0, 10) >= 7) {
           enemy = new EnemyTwo(
             this,
             800,
-            Phaser.Math.Between(0, this.game.config.height - 10)
+            Phaser.Math.Between(0, this.game.config.height - 30)
           );
         } else {
           enemy = new EnemyThree(
             this,
             800,
-            Phaser.Math.Between(0, this.game.config.height - 10)
+            Phaser.Math.Between(0, this.game.config.height - 30)
           );
         }
       },
       callbackScope: this,
       loop: true
     });
+
+    this.physics.add.collider(this.player, this.enemies);
   }
 
   update() {
@@ -114,17 +115,24 @@ class SceneMain extends Phaser.Scene {
 
     if (!this.player.getData('isDead')) {
       this.player.update();
-      if (this.keyW.isDown) {
+
+      if (this.keyUp.isDown) {
         this.player.moveUp();
-      }
-      else if (this.keyS.isDown) {
+      } else if (this.keyDown.isDown) {
         this.player.moveDown();
       }
-      if (this.keyA.isDown) {
+
+      if (this.keyLeft.isDown) {
         this.player.moveLeft();
-      }
-      else if (this.keyD.isDown) {
+      } else if (this.keyRight.isDown) {
         this.player.moveRight();
+      }
+
+      if (this.keySpace.isDown) {
+        this.player.setData("isShooting", true);
+      } else {
+        this.player.setData("timerShootTick", this.player.getData("timerShootDelay") - 10);
+        this.player.setData("isShooting", false);
       }
     }
   }

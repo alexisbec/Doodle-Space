@@ -11,6 +11,7 @@ window.onload = function() {
       }
     },
     scene: [
+      SceneMainMenu,
       SceneMain,
       SceneGameOver
     ],
