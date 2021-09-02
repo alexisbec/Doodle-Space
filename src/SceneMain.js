@@ -24,6 +24,15 @@ class SceneMain extends Phaser.Scene {
       frameHeight: 30
     });
 
+    this.load.spritesheet('explosion', '../dist/assets/explosion.png', {
+      frameWidth: 32,
+      frameHeight: 32
+    });
+
+    this.load.audio('sndExp1', '../dist/assets/sndExp1.wav');
+    this.load.audio('sndExp2', '../dist/assets/sndExp2.wav');
+    this.load.audio('sndBullet', '../dist/assets/sndBullet.wav');
+
     this.load.image('bullet', '../dist/assets/bullet.png');
     this.load.image('bg1', '../dist/assets/bg1.jpg');
     this.load.image('bg2', '../dist/assets/bg2.png');
@@ -74,13 +83,28 @@ class SceneMain extends Phaser.Scene {
       repeat: -1
     });
 
+    this.anims.create({
+      key: "explosion",
+      frames: this.anims.generateFrameNumbers("explosion"),
+      frameRate: 20,
+      repeat: 0
+    });
+
+    this.sfx = {
+      explosions: [
+        this.sound.add("sndExp1"),
+        this.sound.add("sndExp2")
+      ],
+      bullet: this.sound.add("sndBullet")
+    };
+
     this.enemies = this.add.group();
-    this.playerLasers = this.add.group();
+    this.playerBullets = this.add.group();
 
     this.time.addEvent({
       delay: 800,
       callback: function() {
-        let enemy = null;
+        let enemy;
 
         if (Phaser.Math.Between(0, 10) >= 3) {
           enemy = new EnemyOne(
@@ -101,12 +125,36 @@ class SceneMain extends Phaser.Scene {
             Phaser.Math.Between(0, this.game.config.height - 30)
           );
         }
+
+        if (enemy !== null) {
+          enemy.setScale(Phaser.Math.Between(10, 15) * 0.1);
+          this.enemies.add(enemy);
+        }
       },
       callbackScope: this,
       loop: true
     });
 
-    this.physics.add.collider(this.player, this.enemies);
+    this.physics.add.collider(this.playerBullets, this.enemies, function(playerBullet, enemy) {
+      if (enemy) {
+        if (enemy.onDestroy !== undefined) {
+          enemy.onDestroy();
+          console.log('laser');
+        }
+
+        enemy.explode(true);
+        playerBullet.destroy();
+      }
+    });
+
+    this.physics.add.overlap(this.player, this.enemies, function(player, enemy) {
+      if (!player.getData("isDead") && !enemy.getData("isDead")) {
+        player.explode(false);
+        enemy.explode(true);
+        console.log('ship');
+        player.onDestroy();
+      }
+    });
   }
 
   update() {
@@ -131,8 +179,40 @@ class SceneMain extends Phaser.Scene {
       if (this.keySpace.isDown) {
         this.player.setData("isShooting", true);
       } else {
-        this.player.setData("timerShootTick", this.player.getData("timerShootDelay") - 10);
+        this.player.setData("timerShootTick", this.player.getData("timerShootDelay") - 1);
         this.player.setData("isShooting", false);
+      }
+    }
+
+    for (var i = 0; i < this.enemies.getChildren().length; i++) {
+      var enemy = this.enemies.getChildren()[i];
+
+      enemy.update();
+
+      if (enemy.x < -enemy.displayWidth ||
+        enemy.x > this.game.config.width + enemy.displayWidth ||
+        enemy.y < -enemy.displayHeight * 4 ||
+        enemy.y > this.game.config.height + enemy.displayHeight) {
+        if (enemy) {
+          if (enemy.onDestroy !== undefined) {
+            enemy.onDestroy();
+          }
+          enemy.destroy();
+        }
+      }
+    }
+
+    for (var i = 0; i < this.playerBullets.getChildren().length; i++) {
+      var bullet = this.playerBullets.getChildren()[i];
+      bullet.update();
+
+      if (bullet.x < -bullet.displayWidth ||
+        bullet.x > this.game.config.width + bullet.displayWidth ||
+        bullet.y < -bullet.displayHeight * 4 ||
+        bullet.y > this.game.config.height + bullet.displayHeight) {
+        if (bullet) {
+          bullet.destroy();
+        }
       }
     }
   }
