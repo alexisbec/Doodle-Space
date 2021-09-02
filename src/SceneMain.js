@@ -24,9 +24,9 @@ class SceneMain extends Phaser.Scene {
       frameHeight: 30
     });
 
-    this.load.spritesheet('explosion', '../dist/assets/explosion.png', {
-      frameWidth: 20,
-      frameHeight: 20
+    this.load.spritesheet('explosion', '../dist/assets/explosions.png', {
+      frameWidth: 32,
+      frameHeight: 32
     });
 
     this.load.audio('sndExp1', '../dist/assets/sndExp1.wav');
