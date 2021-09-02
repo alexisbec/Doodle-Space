@@ -1,6 +1,6 @@
-class SceneGameOver extends Phaser.Scene {
+class GameOver extends Phaser.Scene {
   constructor() {
-    super({ key: 'SceneGameOver' });
+    super({ key: 'GameOver' });
   }
 
   preload() {
@@ -27,7 +27,7 @@ class SceneGameOver extends Phaser.Scene {
 
     this.restartBtn.on("pointerup", function() {
       this.restartBtn.setTexture("restartBtn");
-      this.scene.start("SceneMain");
+      this.scene.start("Game");
     }, this);
   }
 

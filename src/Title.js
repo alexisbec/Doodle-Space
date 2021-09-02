@@ -1,6 +1,6 @@
-class SceneMainMenu extends Phaser.Scene {
+class Title extends Phaser.Scene {
   constructor() {
-    super({ key: 'SceneMainMenu' });
+    super({ key: 'Title' });
   }
 
   preload() {
@@ -27,7 +27,7 @@ class SceneMainMenu extends Phaser.Scene {
 
     this.startBtn.on("pointerup", function() {
       this.startBtn.setTexture("startBtn");
-      this.scene.start("SceneMain");
+      this.scene.start("Game");
     }, this);
   }
 
