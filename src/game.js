@@ -99,6 +99,7 @@ class Game extends Phaser.Scene {
     };
 
     this.enemies = this.add.group();
+    this.enemyBullets = this.add.group();
     this.playerBullets = this.add.group();
 
     this.time.addEvent({
@@ -139,7 +140,6 @@ class Game extends Phaser.Scene {
       if (enemy) {
         if (enemy.onDestroy !== undefined) {
           enemy.onDestroy();
-          console.log('laser');
         }
 
         enemy.explode(true);
@@ -147,11 +147,19 @@ class Game extends Phaser.Scene {
       }
     });
 
+    this.physics.add.overlap(this.player, this.enemyBullets, function(player, bullet) {
+      if (!player.getData("isDead") &&
+          !bullet.getData("isDead")) {
+        player.explode(false);
+        player.onDestroy();
+        bullet.destroy();
+      }
+    });
+
     this.physics.add.overlap(this.player, this.enemies, function(player, enemy) {
       if (!player.getData("isDead") && !enemy.getData("isDead")) {
         player.explode(false);
         enemy.explode(true);
-        console.log('ship');
         player.onDestroy();
       }
     });

@@ -1,4 +1,4 @@
-class Entity extends Phaser.GameObjects.Sprite {
+class Preloader extends Phaser.GameObjects.Sprite {
   constructor(scene, x, y, key, type) {
     super(scene, x, y, key);
 
@@ -34,7 +34,7 @@ class Entity extends Phaser.GameObjects.Sprite {
   }
 }
 
-class Player extends Entity {
+class Player extends Preloader {
   constructor(scene, x, y, key) {
     super(scene, x, y, key, 'Player');
 
@@ -92,23 +92,52 @@ class Player extends Entity {
   }
 }
 
-class PlayerBullet extends Entity {
+class PlayerBullet extends Preloader {
   constructor(scene, x, y) {
     super(scene, x, y, 'bullet');
     this.body.velocity.x = 200
   }
 }
 
-class EnemyOne extends Entity {
+class EnemyBullet extends Preloader {
+  constructor(scene, x, y) {
+    super(scene, x, y, 'bullet');
+    this.body.velocity.x = -200;
+  }
+}
+
+class EnemyOne extends Preloader {
   constructor(scene, x, y) {
     super(scene, x, y, 'enemy_1');
 
     this.body.velocity.x = -Phaser.Math.Between(100, 150);
-    this.play('enemy_1');
+
+    this.shootTimer = this.scene.time.addEvent({
+      delay: 2000,
+      callback: function() {
+        let bullet = new EnemyBullet(
+          this.scene,
+          this.x,
+          this.y
+        );
+        bullet.setScale(this.scaleX);
+        this.scene.enemyBullets.add(bullet);
+      },
+      callbackScope: this,
+      loop: true
+    });
+  }
+
+  onDestroy() {
+    if (this.shootTimer !== undefined) {
+      if (this.shootTimer) {
+        this.shootTimer.remove(false);
+      }
+    }
   }
 }
 
-class EnemyTwo extends Entity {
+class EnemyTwo extends Preloader {
   constructor(scene, x, y) {
     super(scene, x, y, 'enemy_2');
 
@@ -117,7 +146,7 @@ class EnemyTwo extends Entity {
   }
 }
 
-class EnemyThree extends Entity {
+class EnemyThree extends Preloader {
   constructor(scene, x, y) {
     super(scene, x, y, 'enemy_3');
 
